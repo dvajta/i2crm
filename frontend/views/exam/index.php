@@ -25,9 +25,26 @@ $this->title = 'Экзамены';
 
             'id',
             'title',
-            'exam_date',
+            [
+                'attribute' => 'exam_date',
+                'label' => 'Дата экзамена',
+                'value' => function($model){
+                    return date('d.m.Y H:i', strtotime($model->exam_date));
+                }
+            ],
             'quantity',
-
+            [
+                'attribute' => 'deadline',
+                'label' => 'Дата дедлайна',
+                'value' => 'deadline',
+                'contentOptions' => function($model){
+                    if($model->deadline !== null){
+                        return ['id' => 'deadline'.$model->id,'class' => 'add-result'];
+                    }else{
+                        return ['id' => 'deadline'.$model->id,'class' => 'not-result'];
+                    }
+                },
+            ],
             [
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{grab}{update}{delete}',
@@ -54,7 +71,7 @@ $js = <<<JS
                     type: 'GET',
                     success: function(res){
                         if(!res) alert('Ошибка');
-                        showResult(res);
+                        showResult(res,id);
                         
                     },
                     error: function(){
@@ -63,9 +80,9 @@ $js = <<<JS
             });
         })
 
-        function showResult(res){
-            $('#view-result .res-mess').html(res);
-            $('#view-result').modal();
+        function showResult(res, id){
+            $('#deadline'+id).html(res);
+            $('#deadline'+id).removeClass('not-result').addClass('add-result');
         }
     
 JS;

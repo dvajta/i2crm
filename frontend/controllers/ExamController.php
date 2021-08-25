@@ -62,33 +62,15 @@ class ExamController extends Controller
         if($this->request->isAjax){
             $id = $this->request->get('id');
             $exam = $this->findModel($id);
-            $result = $this->getResult($exam);
+            $result = $exam->getResult();
             return $result;
-        }
-    }
-
-    public function getResult($exam)
-    {
-        //Exam::find()->where(['exam_date'])
-        $now = strtotime("now");
-        $date_exam = strtotime($exam->exam_date);
-        $quantity = $exam->quantity*24*60*60;
-        $defaultStart = date('Y-m-d H:i:s', $date_exam - $quantity);
-
-        //Exam::find()->where(['exam_date'])
-        $numberExceptions = Exam::find()
-        ->where(['between', 'exam_date', $defaultStart, $exam->exam_date])
-        ->andWhere(['not in', 'id', $exam->id])
-        ->count();
-        if($numberExceptions){
-            $finalStart = 'Невозможно подготовится!';
         }else{
-            $finalStart = date('d.m.Y', strtotime($defaultStart));
+
+            throw new NotFoundHttpException('The requested page does not exist.');
         }
-
-
-        return $finalStart;
     }
+
+    
 
     /**
      * Displays a single Exam model.

@@ -50,8 +50,9 @@ class Exam extends \yii\db\ActiveRecord
             [['exam_date', 'date_create', 'date_update', 'deadline'], 'safe'],
             [['quantity', 'status'], 'integer'],
             [['title'], 'string', 'max' => 10],
+            ['title', 'match', 'pattern' => '/^[a-z]+$/i'],
             ['exam_date', function() {
-                if ((strtotime($this->exam_date) - (strtotime("now") + $this->quantity*24*60*60)) < 0) {
+                if ((strtotime($this->exam_date) - (time() + $this->quantity*24*60*60)) < 0) {
                     return $this->addError('exam_date', 'Экзамен слишком близко, Вы не успеете!'); 
                 }
             }],
@@ -74,6 +75,37 @@ class Exam extends \yii\db\ActiveRecord
             'deadline' => 'Дата дедлайна',
             'status' => 'Статус',
         ];
+    }
+
+    public function getResult()
+    {
+
+        //$now = time();
+        $date_exam = strtotime($this->exam_date);
+        $quantity = $this->quantity*24*60*60;
+        $defaultStart = date('Y-m-d H:i:s', $date_exam - $quantity);
+
+
+        $numberExceptions = Exam::find()
+        ->where(['between', 'exam_date', $defaultStart, $this->exam_date])
+        ->andWhere(['not in', 'id', $this->id])
+        ->count();
+        if($numberExceptions){
+            $finalStart = 'Невозможно подготовится!';
+            return $this->saveResult($finalStart) ? $finalStart : false;
+        }else{
+            $finalStart = date('d.m.Y', strtotime($defaultStart));
+            return $this->saveResult($finalStart) ? $finalStart : false;
+        }
+
+
+        return $finalStart;
+    }
+
+    private function saveResult($finalStart)
+    {
+        $this->deadline = $finalStart;
+        return $this->save(false) ? true : false;
     }
 
     

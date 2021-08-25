@@ -95,3 +95,11 @@ table td > a{
 .help-block{
     color:red!important;
 }
+
+.add-result{
+    background-color:#fcffdb;
+}
+
+.not-result{
+    background-color:#ffc4c4;
+}
