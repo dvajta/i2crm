@@ -54,6 +54,8 @@ class Exam extends \yii\db\ActiveRecord
             ['exam_date', function() {
                 if ((strtotime($this->exam_date) - (time() + $this->quantity*24*60*60)) < 0) {
                     return $this->addError('exam_date', 'Экзамен слишком близко, Вы не успеете!'); 
+                }else{
+                    return true;
                 }
             }],
         ];
@@ -99,7 +101,6 @@ class Exam extends \yii\db\ActiveRecord
         }
 
 
-        return $finalStart;
     }
 
     private function saveResult($finalStart)

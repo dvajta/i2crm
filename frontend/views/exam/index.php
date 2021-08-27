@@ -13,6 +13,7 @@ $this->title = 'Экзамены';
 <div class="exam-index">
     <p>
         <?= Html::a('Добавить экзамен', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Полный расчёт', ['#'], ['id' => 'calculate', 'class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -78,11 +79,10 @@ $js = <<<JS
                         alert('Error');
                     }
             });
-        })
+        });
 
         function showResult(res, id){
-            $('#deadline'+id).html(res);
-            $('#deadline'+id).removeClass('not-result').addClass('add-result');
+            $('#deadline'+id).html(res).removeClass('not-result').addClass('add-result');
         }
     
 JS;
@@ -101,4 +101,26 @@ JS;
 
     ]); ?>
 
-<?=$this->render('modal'); ?>
+
+<?php
+$this->registerJs("
+$('#calculate').on('click',function(event){  
+    event.preventDefault();
+    $.ajax({
+            url: '/exam/all-calculate',
+            type: 'GET',
+            success: function(res){
+                if(!res) alert('Ошибка');
+                location.reload();
+                return false;
+                
+            },
+            error: function(){
+                alert('Error');
+            }
+    });
+});
+
+")
+?>
+

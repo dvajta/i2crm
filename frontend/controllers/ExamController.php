@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use common\models\Exam;
 use frontend\models\ExamSearch;
+use phpDocumentor\Reflection\Types\Boolean;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -64,6 +65,27 @@ class ExamController extends Controller
             $exam = $this->findModel($id);
             $result = $exam->getResult();
             return $result;
+        }else{
+
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+
+    public function actionAllCalculate()
+    {
+        if($this->request->isAjax){
+
+            $exams = Exam::find()->all();
+            $data = true;
+            foreach($exams as $exam){
+                $data = $exam->getResult();
+            }
+            if($data){
+                return true;
+            }else{
+                return false;
+            }
+
         }else{
 
             throw new NotFoundHttpException('The requested page does not exist.');
