@@ -25,7 +25,13 @@ $this->title = 'Экзамены';
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'title',
+            [
+                'attribute' => 'title',
+                'label' => 'Название экзамена',
+                'value' => function($model){
+                    return Html::encode($model->title);
+                }
+            ],
             [
                 'attribute' => 'exam_date',
                 'label' => 'Дата экзамена',
@@ -37,7 +43,9 @@ $this->title = 'Экзамены';
             [
                 'attribute' => 'deadline',
                 'label' => 'Дата дедлайна',
-                'value' => 'deadline',
+                'value' => function($model){
+                    return Html::encode($model->deadline);
+                },
                 'contentOptions' => function($model){
                     if($model->deadline !== null){
                         return ['id' => 'deadline'.$model->id,'class' => 'add-result'];
@@ -51,8 +59,9 @@ $this->title = 'Экзамены';
                 'template' => '{grab}{update}{delete}',
                 'buttons' => [
                     'grab' => function ($url, $model, $key) {
-                            $title = $model->title;
+                            $title = Html::encode($model->title);
                             $id = 'calculate-'.$key;
+                            $url = Url::to(['exam/calculate']);
                             $options = [
                                 'title' => $title,
                                 'data-id' => $key,
@@ -67,7 +76,7 @@ $js = <<<JS
             event.preventDefault();
             var id = $(this).data('id');
             $.ajax({
-                    url: '/exam/calculate',
+                    url: '{$url}',
                     data: {id: id},
                     type: 'GET',
                     success: function(res){
@@ -107,7 +116,7 @@ $this->registerJs("
 $('#calculate').on('click',function(event){  
     event.preventDefault();
     $.ajax({
-            url: '/exam/all-calculate',
+            url: '".Url::to(['exam/all-calculate'])."',
             type: 'GET',
             success: function(res){
                 if(!res) alert('Ошибка');

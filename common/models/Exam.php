@@ -51,14 +51,17 @@ class Exam extends \yii\db\ActiveRecord
             [['quantity', 'status'], 'integer'],
             [['title'], 'string', 'max' => 10],
             ['title', 'match', 'pattern' => '/^[a-z]+$/i'],
-            ['exam_date', function() {
-                if ((strtotime($this->exam_date) - (time() + $this->quantity*24*60*60)) < 0) {
-                    return $this->addError('exam_date', 'Экзамен слишком близко, Вы не успеете!'); 
-                }else{
-                    return true;
-                }
-            }],
+            ['exam_date', 'validateExamDate'],
         ];
+    }
+
+    public function validateExamDate($attribute, $params)
+    {
+        if (!$this->hasErrors()) {
+            if ((strtotime($this->exam_date) - (time() + $this->quantity*24*60*60)) < 0) {
+                $this->addError('exam_date', 'Экзамен слишком близко, Вы не успеете!');
+            }
+        }
     }
 
 

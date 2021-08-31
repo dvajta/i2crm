@@ -73,23 +73,21 @@ class ExamController extends Controller
 
     public function actionAllCalculate()
     {
-        if($this->request->isAjax){
-
-            $exams = Exam::find()->all();
-            $data = true;
-            foreach($exams as $exam){
-                $data = $exam->getResult();
-            }
-            if($data){
-                return true;
-            }else{
-                return false;
-            }
-
-        }else{
-
+        if(!$this->request->isAjax){
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+
+        $exams = Exam::find()->all();
+        $data = true;
+        foreach($exams as $exam){
+            $data = $exam->getResult();
+        }
+        if($data){
+            return true;
+        }else{
+            return false;
+        }
+
     }
 
     
